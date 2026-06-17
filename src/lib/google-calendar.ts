@@ -24,7 +24,11 @@ export async function fetchCalendarEvents(
     singleEvents: true,
     orderBy: 'updated',
   })
-  return response.data.items ?? []
+  const items = response.data.items ?? []
+  if (items.length > 0) {
+    console.log('[calendar] raw event[0]:', JSON.stringify(items[0], null, 2))
+  }
+  return items
 }
 
 export async function getCalendarEvent(
