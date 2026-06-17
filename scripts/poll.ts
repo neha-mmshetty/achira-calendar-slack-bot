@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { fetchCalendarEvents } from '../src/lib/google-calendar'
+import { fetchCalendarEvents, getCalendarEvent } from '../src/lib/google-calendar'
 import { formatSlackMessage, postToSlack, CalendarEventType } from '../src/lib/slack'
 
 // Loads .env.local when running locally. In GitHub Actions, secrets are
@@ -51,10 +51,17 @@ async function main() {
         type = 'updated'
       }
 
-      const message = formatSlackMessage(event, type)
+      let eventToFormat = event
+      if (type === 'cancelled' && !event.summary && event.id) {
+        const full = await getCalendarEvent(calendarId, event.id)
+        if (full?.summary) {
+          eventToFormat = { ...full, status: 'cancelled' }
+        }
+      }
+      const message = formatSlackMessage(eventToFormat, type)
       await postToSlack(message)
       posted++
-      console.log(`Posted [${type}]: ${event.summary ?? '(No title)'}`)
+      console.log(`Posted [${type}]: ${eventToFormat.summary ?? '(No title)'}`)
     }
   }
 

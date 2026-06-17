@@ -26,3 +26,16 @@ export async function fetchCalendarEvents(
   })
   return response.data.items ?? []
 }
+
+export async function getCalendarEvent(
+  calendarId: string,
+  eventId: string,
+): Promise<calendar_v3.Schema$Event | null> {
+  try {
+    const calendar = getCalendarClient()
+    const response = await calendar.events.get({ calendarId, eventId })
+    return response.data
+  } catch {
+    return null
+  }
+}

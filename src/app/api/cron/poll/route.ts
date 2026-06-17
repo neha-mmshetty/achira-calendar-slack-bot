@@ -1,4 +1,4 @@
-import { fetchCalendarEvents } from '@/lib/google-calendar'
+import { fetchCalendarEvents, getCalendarEvent } from '@/lib/google-calendar'
 import { formatSlackMessage, postToSlack, CalendarEventType } from '@/lib/slack'
 
 export async function GET(request: Request) {
@@ -30,7 +30,14 @@ export async function GET(request: Request) {
         type = 'updated'
       }
 
-      const message = formatSlackMessage(event, type)
+      let eventToFormat = event
+      if (type === 'cancelled' && !event.summary && event.id) {
+        const full = await getCalendarEvent(calendarId, event.id)
+        if (full?.summary) {
+          eventToFormat = { ...full, status: 'cancelled' }
+        }
+      }
+      const message = formatSlackMessage(eventToFormat, type)
       await postToSlack(message)
       posted++
     }
