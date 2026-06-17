@@ -5,7 +5,7 @@ on:
   # workflows. */3 is valid cron syntax but will not run more frequently
   # than every 5 minutes on GitHub-hosted runners.
   schedule:
-    - cron: '*/3 * * * *'
+    - cron: '*/5 * * * *'
   # Allows manual runs from the Actions tab for testing without waiting
   # for the schedule.
   workflow_dispatch:
