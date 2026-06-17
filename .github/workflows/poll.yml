@@ -1,0 +1,32 @@
+name: Calendar Poll
+
+on:
+  # GitHub Actions enforces a minimum interval of 5 minutes for scheduled
+  # workflows. */3 is valid cron syntax but will not run more frequently
+  # than every 5 minutes on GitHub-hosted runners.
+  schedule:
+    - cron: '*/3 * * * *'
+  # Allows manual runs from the Actions tab for testing without waiting
+  # for the schedule.
+  workflow_dispatch:
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run calendar poll
+        run: npx tsx scripts/poll.ts
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_CALENDAR_IDS: ${{ secrets.GOOGLE_CALENDAR_IDS }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          INITIAL_LOOKBACK_HOURS: '0.05'
