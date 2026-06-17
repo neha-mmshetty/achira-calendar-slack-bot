@@ -20,7 +20,7 @@ export async function fetchCalendarEvents(
   const response = await calendar.events.list({
     calendarId,
     updatedMin: updatedMin.toISOString(),
-    showDeleted: true,
+    showDeleted: false,,
     singleEvents: true,
     orderBy: 'updated',
   })
