@@ -25,9 +25,31 @@ export async function fetchCalendarEvents(
     orderBy: 'updated',
   })
   const items = response.data.items ?? []
-  if (items.length > 0) {
-    console.log('[calendar] raw event[0]:', JSON.stringify(items[0], null, 2))
-  }
+
+  console.log(
+    `[calendar] ${calendarId} returned ${items.length} events`
+  )
+
+  items.forEach((event) => {
+    console.log(
+      '[calendar-event]',
+      JSON.stringify(
+        {
+          id: event.id,
+          status: event.status,
+          summary: event.summary,
+          updated: event.updated,
+          start: event.start,
+          end: event.end,
+          organizer: event.organizer,
+          attendees: event.attendees,
+        },
+        null,
+        2,
+      ),
+    )
+  })
+
   return items
 }
 
